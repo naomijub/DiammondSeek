@@ -1,6 +1,5 @@
 import javax.swing.ImageIcon;
 import javax.swing.JPanel;
-import javax.swing.Timer;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
@@ -25,7 +24,7 @@ public class Board extends JPanel implements ActionListener{
 	private final int BOARD_HEIGHT = 630;
 	private final int NRO_BLOCKS = 10;
 	
-	private int lifeLeft, score;
+	private int lifeLeft, score, level;
 	private int seekerX, seekerY, seekerDX, seekerDY;
 	
 	private int[][] map = {
@@ -33,7 +32,18 @@ public class Board extends JPanel implements ActionListener{
 	{0},
 	{0},
 	{0},
-	{0},
+	{
+	1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+	1, 1, 1, 1, 0, 1, 0, 0, 0, 1,
+	1, 0, 0, 0, 0, 1, 0, 1, 0, 1,
+	1, 0, 0, 0, 0, 0, 0, 1, 0, 1,
+	1, 0, 0, 0, 0, 1, 1, 1, 0, 1,
+	1, 1, 1, 1, 0, 1, 1, 1, 2, 1,
+	1, 0, 0, 0, 0, 1, 1, 4, 4, 4,
+	1, 0, 1, 1, 1, 1, 4, 4, 4, 1,
+	1, 0 ,0, 0, 2, 1, 4, 4, 4, 1,
+	1, 1, 1, 1, 1, 1, 1, 1, 1, 1 
+	},
 	{0},
 	{0},
 	{0},
@@ -44,6 +54,7 @@ public class Board extends JPanel implements ActionListener{
 
 	// Booleans - is game playable?
     private boolean gameOn, dying;
+    private boolean up, down, left, right;
 	
     //Images
     private Image diammond;
@@ -66,7 +77,12 @@ public class Board extends JPanel implements ActionListener{
 	//board set
 	public void initVar(){
 	    gameOn = true;
+	    up = false;
+	    down = false;
+	    left = false;
+	    right = false;
 	    screenData = new int[NRO_BLOCKS * NRO_BLOCKS];
+	    level = 4;
 	    
 	}
 	
@@ -84,21 +100,21 @@ public class Board extends JPanel implements ActionListener{
 	public void initGame(){
 		lifeLeft = 3;
 	    score = 0;
-	    initLevel0();
+	    initLevel();
 	}
 	
 	//init game set
-	public void initLevel0(){
+	public void initLevel(){
 		for(int i = 0;i < NRO_BLOCKS * NRO_BLOCKS;i++){
-			screenData[i] = map[4][i];
+			screenData[i] = map[level][i];
 		}
 		
-		continueLvel0();
+		continueLevel();
 	}
 	
-	private void continueLvel0(){
-		seekerX = 3 * TILE_SIZE;
-		seekerY = 4 * TILE_SIZE;
+	private void continueLevel(){
+		seekerX = 3;
+		seekerY = 4;
 		seekerDX = 0;
 		seekerDY = 0;
 		dying = false;
@@ -141,9 +157,16 @@ public class Board extends JPanel implements ActionListener{
                 drawDiammond(g2d, i);
             }
 			if ((screenData[i] & 4) != 0) { 
-                drawSeeker(g2d, i);
+				int y = (int) i / 10;
+				int x = i % 10;
+				
+                g2d.setColor(new Color(15, 0, 220));
+                g2d.drawRect(x * 60, y * 60, TILE_SIZE, TILE_SIZE);
+                g2d.fillRect(x * 60, y * 60, TILE_SIZE, TILE_SIZE);
             }
 		}
+
+		//drawSeeker(g2d);
 	}
 	
 	public void drawScore(Graphics2D g2d){
@@ -164,7 +187,7 @@ public class Board extends JPanel implements ActionListener{
         //lifes
         g2d.setColor(Color.WHITE);
         g2d.setFont(font);
-        g2d.drawString(lifes, 520, 616);
+        g2d.drawString(lifes, 350, 616);
 	}
 	
 	public void drawGameOver(Graphics2D g2d){
@@ -191,8 +214,8 @@ public class Board extends JPanel implements ActionListener{
 		}else{
 			moveSeeker(g2d);
 			drawSeeker(g2d);
-			checkDiammonds();
 		}
+		repaint();
 	}
 	
 	//draw map set
@@ -207,14 +230,11 @@ public class Board extends JPanel implements ActionListener{
 		int y = (int) Math.floorDiv(i, 10);
 		int x = i % 10;
 		
-		g2d.drawImage(diammond, x * 60, y * 60, this);
+		g2d.drawImage(diammond, x * 60, y *  60, this);
 	}
 	
-	private void drawSeeker(Graphics2D g2d, int i){
-		int y = (int) Math.floorDiv(i, 10);
-		int x = i % 10;
-		
-		g2d.drawImage(seeker, x * 60, y * 60, this);
+	private void drawSeeker(Graphics2D g2d){
+		g2d.drawImage(seeker, seekerX * 60, seekerY * 60, this);
 	}
 	
 	//play game set
@@ -229,6 +249,40 @@ public class Board extends JPanel implements ActionListener{
         continueLevel();
     }
 	
+	private void moveSeeker(Graphics2D g2d){
+		int newSeekX = seekerX;
+		int newSeekY = seekerY;
+		
+		if(left || right){
+			newSeekX += seekerDX;
+		}
+		if(up || down){
+			newSeekY += seekerDY;
+		}
+		
+		int i = (newSeekY * 10) + newSeekX;
+		
+		if ((screenData[i] & 1) == 0) { 
+            seekerX = newSeekX;
+            seekerY = newSeekY;
+            
+            if ((screenData[i] & 2) != 0) { 
+            	score++;
+            	screenData[i] = 0;
+            	checkDiammonds(g2d, i);
+            }
+            if ((screenData[i] & 4) != 0) { 
+            	die();
+            }
+		}
+		seekerDX = 0;
+		seekerDY = 0;
+	}
+	
+	private void checkDiammonds(Graphics2D g2d, int i){
+		map[level][i] = 0;
+	}
+	
 	//Key Adapter
 	private class TAdapter extends KeyAdapter {
 
@@ -237,25 +291,45 @@ public class Board extends JPanel implements ActionListener{
 	        	int key = e.getKeyCode();
 
 	            if ((key == KeyEvent.VK_LEFT)) {
-	                left();
+	                seekerDX = -1;
+	                seekerDY = 0;
+	                up = false;
+	        	    down = false;
+	        	    left = true;
+	        	    right = false;
 	            }
 
 	            if ((key == KeyEvent.VK_RIGHT)) {
-	                right();
+	            	seekerDX = 1;
+	                seekerDY = 0;
+	                up = false;
+	        	    down = false;
+	        	    left = false;
+	        	    right = true;
 	            }
 
 	            if ((key == KeyEvent.VK_UP)) {
-	                up();
+	            	seekerDX = 0;
+	                seekerDY = -1;
+	                up = true;
+	        	    down = false;
+	        	    left = false;
+	        	    right = false;
 	            }
 
 	            if ((key == KeyEvent.VK_DOWN)) {
-	                down();
+	            	seekerDX = 0;
+	                seekerDY = 1;
+	                up = false;
+	        	    down = true;
+	        	    left = false;
+	        	    right = false;
 	            }
 	        }
 	    }
 	
 	public void actionPerformed(ActionEvent e) {
-
+		
         repaint();
     } 
 }

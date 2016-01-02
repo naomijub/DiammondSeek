@@ -14,7 +14,7 @@ public class Game extends JFrame{
     private void initUI() {
         
         add(new Board());
-        setTitle("Pacman");
+        setTitle("DiammondSeek@naomijub");
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setSize(610, 660);
         setLocationRelativeTo(null);

@@ -28,32 +28,112 @@ public class Board extends JPanel implements ActionListener{
 	private int seekerX, seekerY, seekerDX, seekerDY;
 	
 	private int[][] map = {
-	{0},
-	{0},
-	{0},
-	{0},
-	{
-	1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-	1, 1, 1, 1, 0, 1, 0, 0, 0, 1,
-	1, 0, 0, 0, 0, 1, 0, 1, 0, 1,
-	1, 0, 0, 0, 0, 0, 0, 1, 0, 1,
-	1, 0, 0, 0, 0, 1, 1, 1, 0, 1,
-	1, 1, 1, 1, 0, 1, 1, 1, 2, 1,
-	1, 0, 0, 0, 0, 1, 1, 4, 4, 4,
-	1, 0, 1, 1, 1, 1, 4, 4, 4, 1,
-	1, 0 ,0, 0, 2, 1, 4, 4, 4, 1,
-	1, 1, 1, 1, 1, 1, 1, 1, 1, 1 
-	},
-	{0},
-	{0},
-	{0},
-	{0}
-	};
+				{
+				1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+				1, 2, 0, 0, 0, 0, 1, 0, 0, 1,
+				1, 1, 1, 1, 1, 0, 0, 0, 0, 1,
+				1, 0, 0, 0, 0, 0, 0, 0, 0, 32,
+				1, 0, 0, 0, 0, 0, 1, 0, 0, 1,
+				1, 0, 0, 1, 1, 1, 1, 0, 1, 1,
+				1, 0, 0, 0, 0, 0, 0, 0, 4, 4,
+				1, 1, 1, 1, 1, 1, 0, 0, 4, 4,
+				1, 0, 0, 0, 0, 0, 0, 4, 4, 4,
+				1, 16, 1, 1, 1, 1, 4, 4, 4, 4 
+				},{
+				1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+				1, 0, 0, 0, 1, 1, 1, 0, 2, 1,
+				1, 0, 0, 0, 1, 0, 0, 0, 1, 1,
+				64, 0, 0, 0, 0, 0, 0, 0, 0, 32,
+				1, 1, 0, 0, 0, 0, 1, 1, 0, 1,
+				4, 0, 0, 0, 0, 0, 1, 1, 0, 1,
+				4, 0, 0, 0, 0, 0, 1, 1, 0, 1,
+				4, 0, 0, 1, 1, 1, 1, 1, 0, 1,
+				4, 1, 1, 1, 0, 0, 0, 0, 0, 1,
+				4, 1, 1, 1, 16, 1, 1, 1, 1, 1
+				},{
+				1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+				1, 0, 0, 0, 0, 2, 0, 0, 0, 1,
+				1, 0, 1, 1, 1, 1, 1, 1, 0, 1,
+				64, 0, 1, 0, 0, 0, 0, 0, 0, 1,
+				1, 1, 1, 0, 0, 0, 0, 0, 0, 1,
+				1, 0, 0, 0, 1, 1, 1, 1, 1, 1,
+				1, 0, 1, 1, 1, 0, 0, 0, 0, 1,
+				1, 0, 1, 1, 1, 0, 1, 1, 2, 1,
+				1, 0, 0, 0, 0, 0, 1, 1, 1, 1,
+				1, 1, 1, 1, 1, 16, 1, 1, 1, 1
+				},{
+				1, 8, 1, 1, 1, 1, 4, 4, 4, 4,
+				1, 0, 1, 1, 0, 1, 0, 4, 4, 4,
+				1, 0, 1, 1, 0, 0, 0, 4, 4, 4,
+				1, 0, 1, 1, 0, 0, 1, 1, 1, 1,
+				1, 0, 1, 0, 0, 0, 1, 0, 0, 32,
+				4, 0, 1, 0, 0, 0, 1, 0, 1, 1,
+				4, 2, 0, 0, 0, 0, 1, 0, 1, 1,
+				4, 0, 4, 4, 0, 0, 1, 0, 1, 1,
+				1, 0, 4, 4, 0, 0, 0, 0, 1, 1,
+				1, 16, 1, 1, 1, 1, 1, 1, 1, 1
+				},{
+				1, 1, 1, 1, 8, 1, 1, 1, 1, 1,
+				1, 1, 1, 1, 0, 1, 0, 0, 0, 1,
+				1, 0, 0, 0, 0, 1, 0, 1, 0, 1,
+				1, 0, 0, 0, 0, 0, 0, 1, 0, 1,
+				64, 0, 0, 0, 0, 1, 1, 1, 0, 1,
+				1, 1, 1, 1, 0, 1, 1, 1, 2, 1,
+				1, 0, 0, 0, 0, 1, 1, 4, 4, 4,
+				1, 0, 1, 1, 1, 1, 4, 4, 4, 1,
+				1, 0 ,0, 0, 2, 1, 4, 4, 4, 1,
+				1, 1, 1, 1, 1, 1, 1, 1, 1, 1 
+				},{
+				1, 1, 1, 1, 1, 8, 1, 1, 1, 1,
+				1, 0, 0, 0, 1, 0, 1, 1, 2, 1,
+				1, 2, 1, 0, 1, 0, 1, 1, 0, 1,
+				1, 1, 0, 0, 1, 0, 1, 1, 0, 1,
+				1, 1, 0, 1, 1, 0, 1, 1, 0, 1,
+				1, 1, 0, 1, 1, 0, 1, 1, 0, 1,
+				4, 4, 0, 0, 0, 0, 0, 1, 0, 1,
+				4, 4, 1, 1, 1, 1, 0, 1, 0, 4,
+				1, 2, 0, 0, 1, 1, 0, 0, 0, 4,
+				1, 1, 1, 16, 1, 1, 1, 1, 1, 4
+				},{
+				1, 8, 1, 1, 1, 1, 1, 1, 1, 1,
+				1, 0, 0, 0, 0, 0, 0, 1, 1, 1,
+				1, 0, 2, 1, 1, 1, 1, 1, 1, 1,
+				4, 4, 0, 0, 0, 0, 0, 1, 0, 32,
+				4, 4, 1, 1, 1, 1, 0, 1, 0, 1,
+				4, 4, 1, 1, 1, 1, 0, 0, 0, 1,
+				1, 0, 0, 0, 0, 0, 1, 0, 1, 1,
+				1, 0, 4, 4, 4, 0, 1, 0, 1, 1,
+				1, 0, 0, 2, 4, 0, 0, 0, 1, 1,
+				1, 4, 4, 4, 4, 4, 1, 1, 1, 1
+				},{
+				1, 1, 1, 1, 1, 1, 1, 4, 4, 1,
+				1, 1, 1, 0, 0, 1, 4, 4, 4, 1,
+				1, 1, 1, 0, 0, 1, 4, 4, 4, 1,
+				64, 0, 0, 0, 0, 0, 0, 0, 2, 1,
+				1, 1, 1, 0, 0, 0, 0, 1, 1, 1,
+				1, 1, 1, 0, 0, 0, 0, 1, 1, 1,
+				1, 1, 1, 0, 0, 0, 0, 0, 0, 32,
+				1, 1, 0, 0, 0, 0, 0, 1, 1, 1,
+				1, 1, 0, 0, 0, 1, 1, 1, 1, 1,
+				1, 1, 1, 1, 1, 1, 1, 1, 1, 1 
+				},{
+				1, 1, 1, 8, 1, 1, 1, 1, 1, 1,
+				1, 0, 0, 0, 0, 1, 0, 0, 0, 1,
+				1, 0, 0, 0, 0, 1, 0, 1, 0, 1,
+				1, 0, 0, 0, 0, 1, 0, 1, 0, 1,
+				1, 0, 0, 0, 0, 0, 0, 1, 0, 1,
+				1, 0, 0, 0, 0, 1, 4, 4, 0, 1,
+				64, 0, 4, 4, 4, 4, 4, 4, 0, 1,
+				1, 1, 4, 4, 4, 4, 4, 4, 2, 1,
+				1, 1, 2, 0, 0, 0, 0, 0, 0, 1,
+				1, 1, 1, 1, 1, 1, 1, 1, 1, 1
+				}
+			};
 	
 	private int[] screenData;
 
 	// Booleans - is game playable?
-    private boolean gameOn, dying;
+    private boolean gameOn, dying, win;
     private boolean up, down, left, right;
 	
     //Images
@@ -77,12 +157,15 @@ public class Board extends JPanel implements ActionListener{
 	//board set
 	public void initVar(){
 	    gameOn = true;
+	    win = false;
 	    up = false;
 	    down = false;
 	    left = false;
 	    right = false;
 	    screenData = new int[NRO_BLOCKS * NRO_BLOCKS];
 	    level = 4;
+	    seekerX = 3;
+		seekerY = 4;
 	    
 	}
 	
@@ -113,8 +196,6 @@ public class Board extends JPanel implements ActionListener{
 	}
 	
 	private void continueLevel(){
-		seekerX = 3;
-		seekerY = 4;
 		seekerDX = 0;
 		seekerDY = 0;
 		dying = false;
@@ -214,8 +295,14 @@ public class Board extends JPanel implements ActionListener{
 		}else{
 			moveSeeker(g2d);
 			drawSeeker(g2d);
+			score();
 		}
-		repaint();
+		if(win){
+			//repaint();
+			drawWin(g2d);
+		}else{
+			repaint();
+		}
 	}
 	
 	//draw map set
@@ -245,6 +332,9 @@ public class Board extends JPanel implements ActionListener{
         if (lifeLeft == 0) {
             gameOn = false;
         }
+        level = 4;
+        seekerX = 3;
+        seekerY = 4;
 
         continueLevel();
     }
@@ -275,12 +365,63 @@ public class Board extends JPanel implements ActionListener{
             	die();
             }
 		}
+		
+		if (up && (screenData[i] & 8) != 0) { 
+        	level -= 3;
+        	seekerY = 9;
+        	System.out.println("Level= "+level);
+        	g2d.dispose();
+        	initLevel();
+        }
+		if (down && (screenData[i] & 16) != 0) { 
+        	level += 3;
+        	seekerY = 0;
+        	System.out.println("Level= "+level);
+        	g2d.dispose();
+        	initLevel();
+        }
+		if (right && (screenData[i] & 32) != 0) { 
+        	level++;
+        	seekerX = 0;
+        	System.out.println("Level= "+level);
+        	g2d.dispose();
+        	initLevel();
+        }
+		if (left && (screenData[i] & 64) != 0) { 
+        	level--;
+        	seekerX = 9;
+        	System.out.println("Level= "+level);
+        	g2d.dispose();
+        	initLevel();
+        }
 		seekerDX = 0;
 		seekerDY = 0;
 	}
 	
 	private void checkDiammonds(Graphics2D g2d, int i){
 		map[level][i] = 0;
+	}
+	
+	private void score(){
+		if(score == 15){
+			win = true;
+		}
+	}
+	
+	public void drawWin(Graphics2D g2d){
+		Font font = new Font("Arial", Font.BOLD, 20);
+		String str = "You WIN!!";
+		
+		
+		//backgroud
+		g2d.setColor(new Color(100, 100, 100));
+        g2d.fillRect(0, 600, 600, 30);
+        g2d.drawRect(0, 600, 600, 30);
+        
+        //Game Over
+        g2d.setColor(Color.WHITE);
+        g2d.setFont(font);
+        g2d.drawString(str, 50, 616);
 	}
 	
 	//Key Adapter

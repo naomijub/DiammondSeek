@@ -1,5 +1,6 @@
 import javax.swing.ImageIcon;
 import javax.swing.JPanel;
+import javax.swing.Timer;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
@@ -26,6 +27,16 @@ public class Board extends JPanel implements ActionListener{
 	
 	private int lifeLeft, score, level;
 	private int seekerX, seekerY, seekerDX, seekerDY;
+	private int count = 0;
+	
+	private int[][] spiders = {
+			//level, direction (0 =x, 1 = y), x, y, way
+			{0, 0, 5, 2, 1},
+			{1, 1, 4, 3, 1},
+			{3, 1, 5, 2, 1},
+			{4, 0, 6, 3, 1},
+			{7, 1, 5, 3, 1},
+			{8, 0, 1, 2, 1}}; 
 	
 	private int[][] map = {
 				{
@@ -140,6 +151,7 @@ public class Board extends JPanel implements ActionListener{
     private Image diammond;
     private Image seeker;
     private Image tree;
+    private Image spiderUp, spiderDown, spiderRight, spiderLeft;
     
 	public Board(){
 		addKeyListener(new TAdapter());
@@ -178,6 +190,18 @@ public class Board extends JPanel implements ActionListener{
 		
 		ImageIcon iiTree = new ImageIcon("tree.png");
 		tree = iiTree.getImage();
+		
+		ImageIcon iiSpiderUp = new ImageIcon("spiderup.png");
+		spiderUp = iiSpiderUp.getImage();
+		
+		ImageIcon iiSpiderDown = new ImageIcon("spiderdown.png");
+		spiderDown = iiSpiderDown.getImage();
+		
+		ImageIcon iiSpiderRight = new ImageIcon("spiderright.png");
+		spiderRight = iiSpiderRight.getImage();
+		
+		ImageIcon iiSpiderLeft = new ImageIcon("spiderleft.png");
+		spiderLeft = iiSpiderLeft.getImage();
 	}
 	
 	public void initGame(){
@@ -295,6 +319,7 @@ public class Board extends JPanel implements ActionListener{
 		}else{
 			moveSeeker(g2d);
 			drawSeeker(g2d);
+			moveSpider(g2d);
 			score();
 		}
 		if(win){
@@ -336,7 +361,7 @@ public class Board extends JPanel implements ActionListener{
         seekerX = 3;
         seekerY = 4;
 
-        continueLevel();
+        initLevel();
     }
 	
 	private void moveSeeker(Graphics2D g2d){
@@ -422,6 +447,68 @@ public class Board extends JPanel implements ActionListener{
         g2d.setColor(Color.WHITE);
         g2d.setFont(font);
         g2d.drawString(str, 50, 616);
+	}
+	
+	public void moveSpider(Graphics2D g2d){
+		boolean hasSpider = false;
+		int idxLvl = 0;
+	
+		for(int i = 0;i < 6;i++){
+			if(level == spiders[i][0]){
+				hasSpider = true;
+				idxLvl = i;
+			}
+		}
+		
+		if(hasSpider && (count % 2 == 1) ){
+			int pos = spiders[idxLvl][4];
+			if(spiders[idxLvl][1] == 0){
+				int i = spiders[idxLvl][3] * 10 + spiders[idxLvl][2];
+				
+				if((screenData[i + pos] & 1) != 0){
+					spiders[idxLvl][2] -= pos;
+					spiders[idxLvl][4] = pos * (-1);
+				}else{
+					spiders[idxLvl][2] += pos;
+				}
+				
+			}else{
+				int i = spiders[idxLvl][3] * 10 + spiders[idxLvl][2];
+				
+				if((screenData[i + (pos * 10)] & 1) != 0){
+					spiders[idxLvl][3] -= pos;
+					spiders[idxLvl][4] = pos * (-1);
+				}else{
+					spiders[idxLvl][3] += pos;
+				}
+			}
+			drawSpider(g2d, pos, idxLvl);
+			
+			if(spiders[idxLvl][2] == seekerX && spiders[idxLvl][3] == seekerY){
+				die();
+			}
+		}
+		count++;
+	}
+	
+	public void drawSpider(Graphics2D g2d, int pos, int idx){
+		int x = spiders[idx][2], y = spiders[idx][3];
+		if(spiders[idx][1] == 0){
+			if(pos == 1){
+				g2d.drawImage(spiderRight, x * TILE_SIZE, y * TILE_SIZE, this);
+			}
+			if(pos == -1){
+				g2d.drawImage(spiderLeft, x * TILE_SIZE, y * TILE_SIZE, this);
+			}
+		}
+		if(spiders[idx][1] == 1){
+			if(pos == 1){
+				g2d.drawImage(spiderUp, x * TILE_SIZE, y * TILE_SIZE, this);
+			}
+			if(pos == -1){
+				g2d.drawImage(spiderDown, x * TILE_SIZE, y * TILE_SIZE, this);
+			}
+		}
 	}
 	
 	//Key Adapter

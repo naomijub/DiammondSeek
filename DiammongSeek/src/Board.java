@@ -27,7 +27,6 @@ public class Board extends JPanel implements ActionListener{
 	
 	private int lifeLeft, score, level;
 	private int seekerX, seekerY, seekerDX, seekerDY;
-	private int count = 0;
 	
 	private int[][] spiders = {
 			//level, direction (0 =x, 1 = y), x, y, way
@@ -152,6 +151,8 @@ public class Board extends JPanel implements ActionListener{
     private Image seeker;
     private Image tree;
     private Image spiderUp, spiderDown, spiderRight, spiderLeft;
+    private Timer timer;
+    
     
 	public Board(){
 		addKeyListener(new TAdapter());
@@ -164,6 +165,7 @@ public class Board extends JPanel implements ActionListener{
         initVar();
         loadImages();
         initGame();
+        timer.start();
 	}
 	
 	//board set
@@ -178,6 +180,11 @@ public class Board extends JPanel implements ActionListener{
 	    level = 4;
 	    seekerX = 3;
 		seekerY = 4;
+		timer = new Timer(150, new ActionListener(){
+			 public void actionPerformed(ActionEvent e){
+				 repaint();
+			 }
+		});
 	    
 	}
 	
@@ -270,8 +277,6 @@ public class Board extends JPanel implements ActionListener{
                 g2d.fillRect(x * 60, y * 60, TILE_SIZE, TILE_SIZE);
             }
 		}
-
-		//drawSeeker(g2d);
 	}
 	
 	public void drawScore(Graphics2D g2d){
@@ -325,9 +330,9 @@ public class Board extends JPanel implements ActionListener{
 		if(win){
 			//repaint();
 			drawWin(g2d);
-		}else{
+		}/*else{
 			repaint();
-		}
+		}*/
 	}
 	
 	//draw map set
@@ -385,6 +390,7 @@ public class Board extends JPanel implements ActionListener{
             	score++;
             	screenData[i] = 0;
             	checkDiammonds(g2d, i);
+            	repaint();
             }
             if ((screenData[i] & 4) != 0) { 
             	die();
@@ -460,7 +466,7 @@ public class Board extends JPanel implements ActionListener{
 			}
 		}
 		
-		if(hasSpider && (count % 2 == 1) ){
+		if(hasSpider){
 			int pos = spiders[idxLvl][4];
 			if(spiders[idxLvl][1] == 0){
 				int i = spiders[idxLvl][3] * 10 + spiders[idxLvl][2];
@@ -488,7 +494,6 @@ public class Board extends JPanel implements ActionListener{
 				die();
 			}
 		}
-		count++;
 	}
 	
 	public void drawSpider(Graphics2D g2d, int pos, int idx){

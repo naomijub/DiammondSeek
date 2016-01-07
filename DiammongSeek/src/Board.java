@@ -29,13 +29,13 @@ public class Board extends JPanel implements ActionListener{
 	private int seekerX, seekerY, seekerDX, seekerDY;
 	
 	private int[][] spiders = {
-			//level, direction (0 =x, 1 = y), x, y, way
-			{0, 0, 5, 2, 1},
-			{1, 1, 4, 3, 1},
-			{3, 1, 5, 2, 1},
-			{4, 0, 6, 3, 1},
-			{7, 1, 5, 3, 1},
-			{8, 0, 1, 2, 1}}; 
+			//level, direction (0 =x, 1 = y), x, y, way, exists
+			{0, 0, 5, 2, 1, 1},
+			{1, 1, 4, 3, 1, 1},
+			{3, 1, 5, 2, 1, 1},
+			{4, 0, 6, 3, 1, 1},
+			{7, 1, 5, 3, 1, 1},
+			{8, 0, 1, 2, 1, 1}}; 
 	
 	private int[][] map = {
 				{
@@ -153,7 +153,6 @@ public class Board extends JPanel implements ActionListener{
     private Image spiderUp, spiderDown, spiderRight, spiderLeft;
     private Timer timer;
     
-    
 	public Board(){
 		addKeyListener(new TAdapter());
         setPreferredSize(new Dimension(BOARD_WIDTH, BOARD_HEIGHT));
@@ -172,7 +171,7 @@ public class Board extends JPanel implements ActionListener{
 	public void initVar(){
 	    gameOn = true;
 	    win = false;
-	    up = false;
+	    up = true;
 	    down = false;
 	    left = false;
 	    right = false;
@@ -185,7 +184,7 @@ public class Board extends JPanel implements ActionListener{
 				 repaint();
 			 }
 		});
-	    
+	 
 	}
 	
 	public void loadImages(){
@@ -276,13 +275,16 @@ public class Board extends JPanel implements ActionListener{
                 g2d.drawRect(x * 60, y * 60, TILE_SIZE, TILE_SIZE);
                 g2d.fillRect(x * 60, y * 60, TILE_SIZE, TILE_SIZE);
             }
+			if ((screenData[i] & 128) != 0) {
+				drawBlood(g2d, i);
+			}
 		}
 	}
 	
 	public void drawScore(Graphics2D g2d){
 		Font font = new Font("Arial", Font.BOLD, 20);
 		String str = "Diammons: "+ score +"/15";
-		String lifes = "Lifes Left: " + lifeLeft;
+		String lifes = "Lives Left: " + lifeLeft;
 		
 		//backgroud
 		g2d.setColor(new Color(100, 100, 100));
@@ -328,11 +330,8 @@ public class Board extends JPanel implements ActionListener{
 			score();
 		}
 		if(win){
-			//repaint();
 			drawWin(g2d);
-		}/*else{
-			repaint();
-		}*/
+		}
 	}
 	
 	//draw map set
@@ -347,7 +346,7 @@ public class Board extends JPanel implements ActionListener{
 		int y = (int) Math.floorDiv(i, 10);
 		int x = i % 10;
 		
-		g2d.drawImage(diammond, x * 60, y *  60, this);
+		g2d.drawImage(diammond, (x * 60) + 12, (y *  60) + 5, this);
 	}
 	
 	private void drawSeeker(Graphics2D g2d){
@@ -362,12 +361,22 @@ public class Board extends JPanel implements ActionListener{
         if (lifeLeft == 0) {
             gameOn = false;
         }
+        bloodPosSeek();
+       
         level = 4;
         seekerX = 3;
         seekerY = 4;
 
         initLevel();
     }
+	
+	public void bloodPosSeek( ){
+		int i = seekerX + (10 * seekerY);
+		
+		if((map[level][i] & 4) == 0){
+			map[level][i] = 128;
+		}
+	}
 	
 	private void moveSeeker(Graphics2D g2d){
 		int newSeekX = seekerX;
@@ -400,28 +409,24 @@ public class Board extends JPanel implements ActionListener{
 		if (up && (screenData[i] & 8) != 0) { 
         	level -= 3;
         	seekerY = 9;
-        	System.out.println("Level= "+level);
         	g2d.dispose();
         	initLevel();
         }
 		if (down && (screenData[i] & 16) != 0) { 
         	level += 3;
         	seekerY = 0;
-        	System.out.println("Level= "+level);
         	g2d.dispose();
         	initLevel();
         }
 		if (right && (screenData[i] & 32) != 0) { 
         	level++;
         	seekerX = 0;
-        	System.out.println("Level= "+level);
         	g2d.dispose();
         	initLevel();
         }
 		if (left && (screenData[i] & 64) != 0) { 
         	level--;
         	seekerX = 9;
-        	System.out.println("Level= "+level);
         	g2d.dispose();
         	initLevel();
         }
@@ -460,7 +465,7 @@ public class Board extends JPanel implements ActionListener{
 		int idxLvl = 0;
 	
 		for(int i = 0;i < 6;i++){
-			if(level == spiders[i][0]){
+			if(level == spiders[i][0] && spiders[i][5] == 1){
 				hasSpider = true;
 				idxLvl = i;
 			}
@@ -516,6 +521,57 @@ public class Board extends JPanel implements ActionListener{
 		}
 	}
 	
+	public void interact(){
+		boolean hasSpider = false;
+		int spiderI = -1, idx = -1;
+	
+		for(int i = 0;i < 6;i++){
+			if(level == spiders[i][0]){
+				hasSpider = true;
+				idx = i;
+				spiderI = spiders[i][2] + (spiders[i][3] * 10);
+			}
+		}
+		int seekerI = seekerX + (seekerY * 10);
+		
+		if(up && hasSpider){
+			if(spiderI == (seekerI - 10)){
+				spiders[idx][5] = 0;
+				map[level][spiderI] = 128;
+			}
+		}
+		if(down && hasSpider){
+			if(spiderI == (seekerI + 10)){
+				spiders[idx][5] = 0;
+				map[level][spiderI] = 128;
+			}
+			repaint();
+		}
+		if(left && hasSpider){
+			if(spiderI == (seekerI - 1)){
+				spiders[idx][5] = 0;
+				map[level][spiderI] = 128;
+			}
+			repaint();
+		}
+		if(right && hasSpider){
+			if(spiderI == (seekerI + 1)){
+				spiders[idx][5] = 0;
+				map[level][spiderI] = 128;
+			}
+			repaint();
+		}
+	}
+	public void drawBlood(Graphics2D g2d, int i){
+		int y = (int) Math.floorDiv(i, 10);
+		int x = i % 10;
+		
+		g2d.setColor(new Color(230, 0, 25));
+		g2d.drawRoundRect((x * 60) + 12, (y * 60) + 10, 35, 40, 15, 15);
+		g2d.fillRoundRect((x * 60) + 12, (y * 60) + 10, 35, 40, 15, 15);
+		
+	}
+	
 	//Key Adapter
 	private class TAdapter extends KeyAdapter {
 
@@ -557,6 +613,9 @@ public class Board extends JPanel implements ActionListener{
 	        	    down = true;
 	        	    left = false;
 	        	    right = false;
+	            }
+	            if ((key == KeyEvent.VK_SPACE)){
+	            	interact();
 	            }
 	        }
 	    }

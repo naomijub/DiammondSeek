@@ -3,9 +3,12 @@ import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 
 import java.awt.EventQueue;
+import java.awt.Image;
 
 public class Game extends JFrame{
 
+	private Image logo;
+	
 	public Game() {
         
         initUI();
@@ -18,7 +21,11 @@ public class Game extends JFrame{
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setSize(610, 660);
         setLocationRelativeTo(null);
-        setVisible(true);   
+        setVisible(true);  
+        
+        ImageIcon img = new ImageIcon("logo.png");
+        logo = img.getImage();
+        setIconImage(logo);
        
     }
     

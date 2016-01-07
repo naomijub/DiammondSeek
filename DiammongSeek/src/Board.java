@@ -143,7 +143,7 @@ public class Board extends JPanel implements ActionListener{
 	private int[] screenData;
 
 	// Booleans - is game playable?
-    private boolean gameOn, dying, win;
+    private boolean gameOn, dying, win, kill;
     private boolean up, down, left, right;
 	
     //Images
@@ -151,7 +151,8 @@ public class Board extends JPanel implements ActionListener{
     private Image seeker;
     private Image tree;
     private Image spiderUp, spiderDown, spiderRight, spiderLeft;
-    private Timer timer;
+    private Image attackImg;
+    private Timer timer, timeAttack;
     
 	public Board(){
 		addKeyListener(new TAdapter());
@@ -175,11 +176,17 @@ public class Board extends JPanel implements ActionListener{
 	    down = false;
 	    left = false;
 	    right = false;
+	    kill = false;
 	    screenData = new int[NRO_BLOCKS * NRO_BLOCKS];
 	    level = 4;
 	    seekerX = 3;
 		seekerY = 4;
 		timer = new Timer(150, new ActionListener(){
+			 public void actionPerformed(ActionEvent e){
+				 repaint();
+			 }
+		});
+		timeAttack = new Timer(100, new ActionListener(){
 			 public void actionPerformed(ActionEvent e){
 				 repaint();
 			 }
@@ -208,6 +215,9 @@ public class Board extends JPanel implements ActionListener{
 		
 		ImageIcon iiSpiderLeft = new ImageIcon("spiderleft.png");
 		spiderLeft = iiSpiderLeft.getImage();
+		
+		ImageIcon iiAttack = new ImageIcon("attack.png");
+		attackImg = iiAttack.getImage();
 	}
 	
 	public void initGame(){
@@ -326,6 +336,7 @@ public class Board extends JPanel implements ActionListener{
 		}else{
 			moveSeeker(g2d);
 			drawSeeker(g2d);
+			attack(g2d);
 			moveSpider(g2d);
 			score();
 		}
@@ -433,6 +444,27 @@ public class Board extends JPanel implements ActionListener{
 		seekerDX = 0;
 		seekerDY = 0;
 	}
+	public void attack(Graphics2D g2d){
+		if(kill){
+			timeAttack.start();
+			int i = seekerX + (10 * seekerY);
+			if(up){
+				drawAttack(g2d, (i - 10));
+			}
+			if(down){
+				drawAttack(g2d, (i + 10));
+			}
+			if(right){
+				drawAttack(g2d, (i + 1));
+			}
+			if(left){
+				drawAttack(g2d, (i - 1));
+			}
+			timeAttack.restart();
+			timeAttack.stop();
+			kill = false;
+		}
+	}
 	
 	private void checkDiammonds(Graphics2D g2d, int i){
 		map[level][i] = 0;
@@ -521,6 +553,14 @@ public class Board extends JPanel implements ActionListener{
 		}
 	}
 	
+	public void drawAttack(Graphics2D g2d, int i){
+		int y = (int) Math.floorDiv(i, 10);
+		int x = i % 10;
+		
+		g2d.drawImage(attackImg,x * 60, y * 60, this);
+	}
+	
+	//interact
 	public void interact(){
 		boolean hasSpider = false;
 		int spiderI = -1, idx = -1;
@@ -538,12 +578,14 @@ public class Board extends JPanel implements ActionListener{
 			if(spiderI == (seekerI - 10)){
 				spiders[idx][5] = 0;
 				map[level][spiderI] = 128;
+				kill = true;
 			}
 		}
 		if(down && hasSpider){
 			if(spiderI == (seekerI + 10)){
 				spiders[idx][5] = 0;
 				map[level][spiderI] = 128;
+				kill = true;
 			}
 			repaint();
 		}
@@ -551,6 +593,7 @@ public class Board extends JPanel implements ActionListener{
 			if(spiderI == (seekerI - 1)){
 				spiders[idx][5] = 0;
 				map[level][spiderI] = 128;
+				kill = true;
 			}
 			repaint();
 		}
@@ -558,6 +601,7 @@ public class Board extends JPanel implements ActionListener{
 			if(spiderI == (seekerI + 1)){
 				spiders[idx][5] = 0;
 				map[level][spiderI] = 128;
+				kill = true;
 			}
 			repaint();
 		}

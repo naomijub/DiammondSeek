@@ -147,7 +147,7 @@ public class Board extends JPanel implements ActionListener{
     private boolean up, down, left, right;
 	
     //Images
-    private Image diammond;
+    private Image diamond;
     private Image seeker;
     private Image tree;
     private Image spiderUp, spiderDown, spiderRight, spiderLeft;
@@ -196,7 +196,7 @@ public class Board extends JPanel implements ActionListener{
 	
 	public void loadImages(){
 		ImageIcon iiDia = new ImageIcon("diammond.png");
-		diammond = iiDia.getImage();
+		diamond = iiDia.getImage();
 		
 		ImageIcon iiSeek = new ImageIcon("seeker.png");
 		seeker = iiSeek.getImage();
@@ -293,7 +293,7 @@ public class Board extends JPanel implements ActionListener{
 	
 	public void drawScore(Graphics2D g2d){
 		Font font = new Font("Arial", Font.BOLD, 20);
-		String str = "Diammons: "+ score +"/15";
+		String str = "Diamonds: "+ score +"/15";
 		String lifes = "Lives Left: " + lifeLeft;
 		
 		//backgroud
@@ -357,7 +357,7 @@ public class Board extends JPanel implements ActionListener{
 		int y = (int) Math.floorDiv(i, 10);
 		int x = i % 10;
 		
-		g2d.drawImage(diammond, (x * 60) + 12, (y *  60) + 5, this);
+		g2d.drawImage(diamond, (x * 60) + 12, (y *  60) + 5, this);
 	}
 	
 	private void drawSeeker(Graphics2D g2d){
@@ -409,7 +409,7 @@ public class Board extends JPanel implements ActionListener{
             if ((screenData[i] & 2) != 0) { 
             	score++;
             	screenData[i] = 0;
-            	checkDiammonds(g2d, i);
+            	checkDiamonds(g2d, i);
             	repaint();
             }
             if ((screenData[i] & 4) != 0) { 
@@ -466,7 +466,7 @@ public class Board extends JPanel implements ActionListener{
 		}
 	}
 	
-	private void checkDiammonds(Graphics2D g2d, int i){
+	private void checkDiamonds(Graphics2D g2d, int i){
 		map[level][i] = 0;
 	}
 	
